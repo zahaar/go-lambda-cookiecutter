@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+echo "==> Running gofmt..."
+make format
+echo "==> Running golint..."
+make lint
+
+echo "==> Running tests..."
+make test
+
+
+# ln -s pre-commit .git/hooks/pre-commit

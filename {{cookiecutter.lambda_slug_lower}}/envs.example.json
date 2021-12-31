@@ -1,0 +1,5 @@
+{
+  "{{ cookiecutter.lambda_slug }}": {
+    "SENTRY_DSN": "your_sentry_dsn"
+  }
+}

@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'SAM Template for {{ cookiecutter.lambda_description }}'
+Resources:
+  {{ cookiecutter.lambda_slug }}:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: main
+      Runtime: go1.x
+      Events:
+        CatchAll:
+          # TODO
+          Type: SNS
+          Properties:
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          DB_HOST:
+          DB_PORT:
+          DB_USER:
+          DB_PASSWORD:
+          DB_NAME:

@@ -1,0 +1,15 @@
+{
+  "lambda_name": "My Lambda",
+  "lambda_version": "0.1.0",
+  "lambda_slug": "{{ cookiecutter.lambda_name.replace(' ', '').replace('-', '') }}",
+  "lambda_slug_lower": "{{ cookiecutter.lambda_name.lower().replace(' ', '_').replace('-', '_') }}",
+  "lambda_description": "GoLang lambda for {{ cookiecutter.lambda_name }}",
+  "author_name": "Engineering Department",
+  "author_email": "engineering@company.de",
+  "go_version": "1.16",
+  "go_module_path": "example.com",
+  "event_type": ["SNS", "S3", "API_GW"],
+  "sentry_dsn": "",
+  "license": ["MIT", "BSD-3", "GNU GPL v3.0", "Apache 2.0", "Mozilla 2.0"],
+  "add_git": [true, false]
+}

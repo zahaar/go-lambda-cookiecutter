@@ -1,0 +1,83 @@
+# When working on your feature branches, if you want to test
+# the feature, you can build & publish the packages by
+# adding your feature branch to the `if` condition, like so:
+#
+#     if: ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "your MR
+# branch")
+# ------------------------------------------------------------
+
+# ------------------------------------------------------------
+# Rules for individual lambda
+.data-subscriber-sensor-readings-rules: &data-subscriber-sensor-readings-rules
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev" || $CI_COMMIT_BRANCH == "main"'
+      changes:
+        - lambdas/data_subscriber_sensor_readings/**/*
+        - .*.yml
+
+
+# ------------------------------------------------------------
+# ------------------------------------------------------------
+#          JOBS START HERE
+# ------------------------------------------------------------
+# ------------------------------------------------------------
+
+# ------------------------------------------------------------
+# Build jobs
+
+build_data_subscriber_sensor_readings:
+  image: golang:1.16
+  stage: build
+  environment:
+    name: data-subscriber-sensor-readings
+  before_script:
+    - apt-get update
+    - apt-get -y install zip
+  script:
+    - version=`make get-version`
+    - payload_name=payload-${version}.zip
+    - PAYLOAD_NAME=${payload_name} make zip # Build and zip the binary
+  artifacts:
+    paths:
+      - dist/*
+  <<: *data-subscriber-sensor-readings-rules
+
+# ------------------------------------------------------------
+# Publish jobs
+publish_json_processor_lambda:
+  image: python:3.8.10-buster
+  stage: publish
+  environment:
+    name: json-processor
+  needs:
+    - job: build_json_processor_lambda
+      artifacts: true
+  script:
+    - package=json_processor_lambda
+    - cd lambdas/$package
+    - version=`cat VERSION`
+    - payload_name=`basename dist/*.zip`
+    - >
+      curl -H "PRIVATE-TOKEN: $CI_GITLAB_USER_ACCESS_TOKEN" \
+        -T "dist/$payload_name" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${package}/${version}/${payload_name}"
+  <<: *json-processor-lambda-rules
+
+publish_data_subscriber_sensor_readings:
+  image: golang:1.16
+  stage: publish
+  environment:
+    name: data-subscriber-sensor-readings
+  needs:
+    - job: build_data_subscriber_sensor_readings
+      artifacts: true
+  script:
+    - package=data_subscriber_sensor_readings
+    - cd lambdas/$package
+    - version=`make get-version`
+    - payload_name=`basename dist/*.zip`
+    - >
+      curl -H "PRIVATE-TOKEN: $CI_GITLAB_USER_ACCESS_TOKEN" \
+        -T "dist/$payload_name" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${package}/${version}/${payload_name}"
+  <<: *data-subscriber-sensor-readings-rules
