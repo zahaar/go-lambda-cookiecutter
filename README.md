@@ -63,5 +63,9 @@ Answer the prompts with your own desired options\_. For example::
 
 Enter the project and take a look around::
 
-    $ cd reddit/
+    $ cd sns-processor/
     $ ls
+
+> IMPORTANT: take a look at README.md file generated inside of Lambda folder
+
+    $ cat sns-processor/README.md
